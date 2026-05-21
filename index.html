@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+        <html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Technical Talk Event Schedule</title>
+            <style>
+                
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .search-container {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .search-container input {
+            width: 70%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        .schedule-item {
+            background-color: #fdfdfd;
+            border: 1px solid #eee;
+            border-left: 5px solid #3498db;
+            margin-bottom: 15px;
+            padding: 15px;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+        .schedule-item:hover {
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            transform: translateY(-2px);
+        }
+        .schedule-item.break {
+            border-left: 5px solid #27ae60;
+            background-color: #e8f5e9;
+        }
+        .schedule-time {
+            font-weight: bold;
+            color: #555;
+            margin-bottom: 5px;
+            display: block;
+        }
+        .schedule-title {
+            font-size: 1.3em;
+            color: #34495e;
+            margin-top: 0;
+            margin-bottom: 5px;
+        }
+        .schedule-speakers {
+            font-style: italic;
+            color: #7f8c8d;
+            margin-bottom: 10px;
+        }
+        .schedule-category {
+            font-size: 0.9em;
+            color: #3498db;
+            margin-bottom: 10px;
+        }
+        .schedule-category span {
+            background-color: #e7f3fd;
+            padding: 3px 8px;
+            border-radius: 3px;
+            margin-right: 5px;
+        }
+        .schedule-description {
+            line-height: 1.5;
+            color: #666;
+        }
+        .no-results {
+            text-align: center;
+            color: #777;
+            padding: 20px;
+            font-size: 1.1em;
+        }
+    
+            </style>
+        </head>
+        <body>
+            <div class="container">
+                <h1>Technical Talk Event Schedule</h1>
+                <div class="search-container">
+                    <input type="text" id="search-input" placeholder="Search by category (e.g., 'Web Development')">
+                </div>
+                <div id="schedule-container">
+                    <!-- Schedule items will be rendered here by JavaScript -->
+                </div>
+            </div>
+            <script>
+                
+        const allScheduleItems = [
+  {
+    "title": "The Future of WebAssembly",
+    "speakers": [
+      "Alice Smith"
+    ],
+    "category": [
+      "Web Development",
+      "Performance"
+    ],
+    "description": "Explore how WebAssembly is changing the landscape of web development and enabling new possibilities for performance-critical applications.",
+    "startTime": "10:00 AM",
+    "endTime": "11:00 AM",
+    "type": "talk"
+  },
+  {
+    "title": "Introduction to Quantum Computing",
+    "speakers": [
+      "Bob Johnson",
+      "Carol White"
+    ],
+    "category": [
+      "Quantum Computing",
+      "Future Tech",
+      "Research"
+    ],
+    "description": "A beginner-friendly introduction to the principles of quantum computing, its potential, and current challenges.",
+    "startTime": "11:10 AM",
+    "endTime": "12:10 PM",
+    "type": "talk"
+  },
+  {
+    "title": "Secure Coding Practices for Modern Applications",
+    "speakers": [
+      "David Green"
+    ],
+    "category": [
+      "Security",
+      "Software Engineering"
+    ],
+    "description": "Learn essential secure coding practices to protect your applications from common vulnerabilities and threats.",
+    "startTime": "12:20 PM",
+    "endTime": "01:20 PM",
+    "type": "talk"
+  },
+  {
+    "title": "Lunch Break",
+    "description": "Enjoy a delicious lunch and network with fellow attendees!",
+    "startTime": "01:20 PM",
+    "endTime": "02:20 PM",
+    "type": "break"
+  },
+  {
+    "title": "Mastering Microservices with Node.js",
+    "speakers": [
+      "Eve Brown"
+    ],
+    "category": [
+      "Backend",
+      "Node.js",
+      "Architecture"
+    ],
+    "description": "Dive deep into building scalable and resilient microservices using Node.js and best practices for deployment and management.",
+    "startTime": "02:20 PM",
+    "endTime": "03:20 PM",
+    "type": "talk"
+  },
+  {
+    "title": "AI in Everyday Life: Opportunities and Challenges",
+    "speakers": [
+      "Frank Black",
+      "Grace Lee"
+    ],
+    "category": [
+      "Artificial Intelligence",
+      "Ethics",
+      "Innovation"
+    ],
+    "description": "Discuss the pervasive impact of AI on society, from personal assistants to autonomous systems, and the ethical considerations involved.",
+    "startTime": "03:30 PM",
+    "endTime": "04:30 PM",
+    "type": "talk"
+  },
+  {
+    "title": "Modern CSS Techniques for Beautiful UIs",
+    "speakers": [
+      "Henry Wilson"
+    ],
+    "category": [
+      "Frontend",
+      "UI/UX",
+      "Design"
+    ],
+    "description": "Discover the latest CSS features and techniques to create stunning and responsive user interfaces with ease.",
+    "startTime": "04:40 PM",
+    "endTime": "05:40 PM",
+    "type": "talk"
+  }
+];
+        
+        function renderSchedule(itemsToRender) {
+            const container = document.getElementById('schedule-container');
+            container.innerHTML = ''; // Clear previous content
+
+            if (itemsToRender.length === 0) {
+                container.innerHTML = '<div class="no-results">No talks found matching your criteria.</div>';
+                return;
+            }
+
+            itemsToRender.forEach(item => {
+                const itemDiv = document.createElement('div');
+                itemDiv.classList.add('schedule-item');
+                if (item.type === 'break') {
+                    itemDiv.classList.add('break');
+                    itemDiv.innerHTML = `
+                        <span class="schedule-time">${item.startTime} - ${item.endTime}</span>
+                        <h2 class="schedule-title">${item.title}</h2>
+                        <p class="schedule-description">${item.description}</p>
+                    `;
+                } else {
+                    const categoriesHtml = item.category.map(cat => '<span>' + cat + '</span>').join('');
+                    itemDiv.innerHTML = `
+                        <span class="schedule-time">${item.startTime} - ${item.endTime}</span>
+                        <h3 class="schedule-title">${item.title}</h3>
+                        <p class="schedule-speakers">${item.speakers.join(' & ')}</p>
+                        <p class="schedule-category">${categoriesHtml}</p>
+                        <p class="schedule-description">${item.description}</p>
+                    `;
+                }
+                container.appendChild(itemDiv);
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            renderSchedule(allScheduleItems);
+
+            const searchInput = document.getElementById('search-input');
+            searchInput.addEventListener('input', (event) => {
+                const searchTerm = event.target.value.toLowerCase();
+                const filteredItems = allScheduleItems.filter(item => {
+                    if (item.type === 'break') return false; // Don't filter breaks
+                    return item.category.some(cat => cat.toLowerCase().includes(searchTerm));
+                });
+                renderSchedule(filteredItems);
+            });
+        });
+    
+            </script>
+        </body>
+        </html>
